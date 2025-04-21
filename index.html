@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weekly Bug Tracker</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+    h1 { text-align: center; }
+    form { margin-bottom: 40px; }
+    label { display: block; margin-top: 10px; }
+    input, textarea { width: 100%; padding: 8px; margin-top: 4px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 40px; }
+    th, td { padding: 8px; border: 1px solid #ccc; text-align: left; }
+    canvas { margin-top: 40px; }
+  </style>
+</head>
+<body>
+  <h1>🪲 Weekly Bug Tracker</h1>
+
+  <form method="POST">
+    <label for="week_ending">Week Ending</label>
+    <input type="date" name="week_ending" required>
+
+    <label for="new_bugs">New Bugs Found</label>
+    <input type="number" name="new_bugs" min="0" required>
+
+    <label for="notes">Notes (optional)</label>
+    <textarea name="notes" rows="3"></textarea>
+
+    <button type="submit">Submit Entry</button>
+  </form>
+
+  <canvas id="bugChart" height="100"></canvas>
+
+  <script>
+    fetch("/chart-data")
+      .then(res => res.json())
+      .then(data => {
+        new Chart(document.getElementById("bugChart"), {
+          type: "line",
+          data: {
+            labels: data.labels,
+            datasets: [{
+              label: "New Bugs per Week",
+              data: data.data,
+              borderColor: "#ff6384",
+              backgroundColor: "rgba(255,99,132,0.2)",
+              fill: true,
+              tension: 0.3
+            }]
+          },
+          options: {
+            scales: {
+              y: { beginAtZero: true }
+            }
+          }
+        });
+      });
+  </script>
+
+  <h2>📅 Historical Entries</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Week Ending</th>
+        <th>New Bugs</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in records %}
+      <tr>
+        <td>{{ row['Week Ending'] }}</td>
+        <td>{{ row['New Bugs'] }}</td>
+        <td>{{ row['Notes'] }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</body>
+</html>
