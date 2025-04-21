@@ -37,5 +37,9 @@ def chart_data():
     data = [int(r["New Bugs"]) for r in records]
     return {"labels": labels, "data": data}
 
+@app.route("/ping")
+def ping():
+    return "pong", 200
+
 if __name__ == "__main__":
     app.run(debug=True)
